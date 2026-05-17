@@ -45,6 +45,10 @@ jobs:
         run: |
           mkdir -p src/semantic_toponav_msgs
           cp -R upstream/ros2/semantic_toponav_msgs/. src/semantic_toponav_msgs/
+          # Drop the upstream checkout so colcon doesn't find the
+          # original copy of semantic_toponav_msgs and refuse to build
+          # on duplicate package names.
+          rm -rf upstream
 
       - name: Resolve rosdeps
         shell: bash
@@ -57,7 +61,8 @@ jobs:
         shell: bash
         run: |
           source /opt/ros/${{ matrix.ros_distro }}/setup.bash
-          colcon build --packages-up-to semantic_toponav_nav2_bt \
+          colcon build --base-paths src \
+            --packages-up-to semantic_toponav_nav2_bt \
             --cmake-args -DCMAKE_BUILD_TYPE=Release
 
       - name: colcon test
@@ -65,6 +70,7 @@ jobs:
         run: |
           source /opt/ros/${{ matrix.ros_distro }}/setup.bash
           source install/setup.bash
-          colcon test --packages-select semantic_toponav_nav2_bt \
+          colcon test --base-paths src \
+            --packages-select semantic_toponav_nav2_bt \
             --event-handlers console_direct+
           colcon test-result --verbose
