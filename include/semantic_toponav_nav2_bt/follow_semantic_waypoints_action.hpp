@@ -50,7 +50,7 @@ namespace semantic_toponav_nav2_bt
 ///     to NavigateThroughPoses (waypoints with has_pose=false are
 ///     skipped).
 class FollowSemanticWaypointsAction
-: public nav2_behavior_tree::BtActionNode<nav2_msgs::action::NavigateThroughPoses>
+  : public nav2_behavior_tree::BtActionNode<nav2_msgs::action::NavigateThroughPoses>
 {
 public:
   using Action = nav2_msgs::action::NavigateThroughPoses;
@@ -72,14 +72,15 @@ public:
 
   static BT::PortsList providedPorts()
   {
-    return providedBasicPorts({
-      BT::InputPort<WaypointArray>(
-        "waypoints",
-        "Semantic plan produced by the semantic-toponav planner."),
-      BT::OutputPort<int>(
-        "n_poses_dispatched",
-        "Count of poses actually dispatched to NavigateThroughPoses."),
-    });
+    return providedBasicPorts(
+      {
+        BT::InputPort<WaypointArray>(
+          "waypoints",
+          "Semantic plan produced by the semantic-toponav planner."),
+        BT::OutputPort<int>(
+          "n_poses_dispatched",
+          "Count of poses actually dispatched to NavigateThroughPoses."),
+      });
   }
 
 private:
