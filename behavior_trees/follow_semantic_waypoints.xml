@@ -1,0 +1,28 @@
+<!-- Sample behavior tree exercising the FollowSemanticWaypoints node.
+     A real deployment would chain this under nav2_bt_navigator's
+     bt_navigator_node and feed the waypoints from a topic subscriber
+     that writes to the blackboard key '{waypoints}'. -->
+<root main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Sequence name="bridge_semantic_plan">
+
+      <!-- Wait until a semantic plan lands on the blackboard. The
+           subscriber-side glue is the caller's responsibility; this
+           BT only consumes once it arrives. -->
+      <RetryUntilSuccessful num_attempts="-1">
+        <CheckCondition>
+          <!-- TODO: replace with whatever your subscriber-glue
+               populates ({waypoints} != null). For BT.CPP v3 the
+               idiom is a custom condition node or a script check. -->
+          <AlwaysSuccess/>
+        </CheckCondition>
+      </RetryUntilSuccessful>
+
+      <FollowSemanticWaypoints
+        waypoints="{waypoints}"
+        server_name="navigate_through_poses"
+        n_poses_dispatched="{n_poses_dispatched}"/>
+
+    </Sequence>
+  </BehaviorTree>
+</root>

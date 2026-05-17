@@ -1,0 +1,14 @@
+<class_libraries>
+  <library path="follow_semantic_waypoints_action">
+    <class name="semantic_toponav_nav2_bt::FollowSemanticWaypointsAction"
+           type="semantic_toponav_nav2_bt::FollowSemanticWaypointsAction"
+           base_class_type="BT::ActionNodeBase">
+      <description>
+        Reads a semantic_toponav_msgs/SemanticWaypointArray from a
+        blackboard input, converts each entry to a
+        geometry_msgs/PoseStamped, and dispatches the resulting list
+        to the Nav2 NavigateThroughPoses action server.
+      </description>
+    </class>
+  </library>
+</class_libraries>
