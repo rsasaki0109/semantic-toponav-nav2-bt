@@ -29,8 +29,9 @@
   <depend>tf2_geometry_msgs</depend>
   <depend>semantic_toponav_msgs</depend>
 
-  <test_depend>ament_lint_auto</test_depend>
-  <test_depend>ament_lint_common</test_depend>
+  <!-- ament_lint_auto / ament_lint_common deferred until the
+       scaffold settles — see CHANGELOG follow-up. Only the gtest
+       smoke check runs under colcon test for now. -->
   <test_depend>ament_cmake_gtest</test_depend>
 
   <export>

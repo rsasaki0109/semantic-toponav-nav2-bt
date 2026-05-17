@@ -25,6 +25,14 @@ Initial scaffold landing. No tagged release yet.
 - Apache-2.0 LICENSE, `.gitignore` for colcon / cmake / editor cruft,
   `CHANGELOG.md` placeholder.
 
+### Deferred
+
+- `ament_lint_auto` / `ament_lint_common` (uncrustify / cpplint /
+  copyright / xmllint / pep257 / lint_cmake) intentionally not wired
+  at the v0.1.0 scaffold stage — bringing the code in line with the
+  ament canonical style needs a focused follow-up PR. Tracked as the
+  first issue against this repo.
+
 ### Depends on
 
 - `semantic_toponav_msgs` v0.1.0+ from the
