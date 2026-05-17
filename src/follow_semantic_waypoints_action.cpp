@@ -14,6 +14,7 @@
 
 #include "semantic_toponav_nav2_bt/follow_semantic_waypoints_action.hpp"
 
+#include <memory>
 #include <optional>
 #include <string>
 
@@ -96,20 +97,21 @@ FollowSemanticWaypointsAction::to_pose_stamped(
   return ps;
 }
 
+namespace
+{
+std::unique_ptr<BT::TreeNode> create_follow_semantic_waypoints_node(
+  const std::string & name, const BT::NodeConfiguration & config)
+{
+  return std::make_unique<FollowSemanticWaypointsAction>(
+    name, "navigate_through_poses", config);
+}
+}  // namespace
+
 }  // namespace semantic_toponav_nav2_bt
 
 BT_REGISTER_NODES(factory)
 {
-  BT::NodeBuilder builder = [](
-    const std::string & name,
-    const BT::NodeConfiguration & config)
-  {
-    return std::make_unique<
-      semantic_toponav_nav2_bt::FollowSemanticWaypointsAction>(
-      name, "navigate_through_poses", config);
-  };
-
-  factory.registerBuilder<
-    semantic_toponav_nav2_bt::FollowSemanticWaypointsAction>(
-    "FollowSemanticWaypoints", builder);
+  factory.registerBuilder<semantic_toponav_nav2_bt::FollowSemanticWaypointsAction>(
+    "FollowSemanticWaypoints",
+    semantic_toponav_nav2_bt::create_follow_semantic_waypoints_node);
 }

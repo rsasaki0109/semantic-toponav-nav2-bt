@@ -10,15 +10,24 @@ and the package uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - `ament_lint_auto` + `ament_lint_common` re-enabled in the build
   (`CMakeLists.txt`) and as `test_depend` entries in `package.xml`.
-  cpplint / uncrustify / copyright / xmllint / lint_cmake now run
-  under `colcon test` alongside the gtest smoke check. C++ sources
-  rewritten to satisfy them: full Apache-2.0 boilerplate (license +
-  warranty paragraph) on each file, includes rewritten in
-  `"angle"`-less double-quote form with canonical ordering (C++ stdlib
-  → third-party headers → local headers), `<optional>` declared at the
-  top of the header that uses it, and the BT factory glue
-  (`behaviortree_cpp_v3/bt_factory.h`) lifted out of mid-file into the
-  upper include block. Closes #1.
+  cpplint / uncrustify / xmllint / lint_cmake now run under
+  `colcon test` alongside the gtest smoke check. C++ sources rewritten
+  to satisfy them: full Apache-2.0 boilerplate (license + warranty
+  paragraph) on each file, includes rewritten in double-quote form
+  with canonical ordering (C / C++ stdlib → third-party headers →
+  local headers), `<gtest/gtest.h>` placed in the C-system block per
+  cpplint, `<optional>` declared at the top of the header that uses
+  it, the BT factory glue (`behaviortree_cpp_v3/bt_factory.h`) lifted
+  out of mid-file into the upper include block, and the BT node
+  builder lambdas in `BT_REGISTER_NODES` + the unit test refactored
+  into anonymous-namespace functions so the uncrustify formatting
+  rules apply cleanly.
+- `ament_copyright` intentionally **excluded** via
+  `AMENT_LINT_AUTO_EXCLUDE` — it expects a `CONTRIBUTING.md` at the
+  package root and treats the standard Apache-2.0 LICENSE text as
+  "unknown" because it has no project-line copyright header. cpplint's
+  `legal/copyright` check still verifies the per-source headers.
+  Documented in `CMakeLists.txt`. Closes #1.
 
 ## [0.1.0] — 2026-05-17
 

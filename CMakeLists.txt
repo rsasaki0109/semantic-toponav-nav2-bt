@@ -69,6 +69,14 @@ install(FILES plugins.xml
 )
 
 if(BUILD_TESTING)
+  # ament_copyright is excluded because it requires a CONTRIBUTING.md
+  # at the package root and rejects the standard Apache-2.0 LICENSE
+  # text (which has no project-line copyright header). cpplint's
+  # legal/copyright check still verifies that every C++ source file
+  # carries a Copyright line.
+  set(AMENT_LINT_AUTO_EXCLUDE
+    ament_cmake_copyright
+  )
   find_package(ament_lint_auto REQUIRED)
   ament_lint_auto_find_test_dependencies()
 

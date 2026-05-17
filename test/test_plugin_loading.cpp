@@ -12,16 +12,26 @@
 // implied. See the License for the specific language governing
 // permissions and limitations under the License.
 
+#include <gtest/gtest.h>
+
 #include <memory>
 #include <string>
-
-#include <gtest/gtest.h>
 
 #include "behaviortree_cpp_v3/bt_factory.h"
 #include "rclcpp/rclcpp.hpp"
 #include "semantic_toponav_nav2_bt/follow_semantic_waypoints_action.hpp"
 
 namespace stb = semantic_toponav_nav2_bt;
+
+namespace
+{
+std::unique_ptr<BT::TreeNode> build_test_node(
+  const std::string & name, const BT::NodeConfiguration & config)
+{
+  return std::make_unique<stb::FollowSemanticWaypointsAction>(
+    name, "navigate_through_poses", config);
+}
+}  // namespace
 
 // Smoke test: confirm the FollowSemanticWaypoints node can be
 // registered with a BT.CPP factory under its documented name.
@@ -35,18 +45,9 @@ TEST(FollowSemanticWaypointsAction, RegistersUnderDocumentedName)
 {
   BT::BehaviorTreeFactory factory;
 
-  BT::NodeBuilder builder = [](
-    const std::string & name,
-    const BT::NodeConfiguration & config)
-  {
-    return std::make_unique<stb::FollowSemanticWaypointsAction>(
-      name, "navigate_through_poses", config);
-  };
-
-  EXPECT_NO_THROW({
+  EXPECT_NO_THROW(
     factory.registerBuilder<stb::FollowSemanticWaypointsAction>(
-      "FollowSemanticWaypoints", builder);
-  });
+      "FollowSemanticWaypoints", build_test_node));
 
   // registeredBuilders() returns a map<string, NodeBuilder>; using
   // .count() avoids touching iterator-pair internals that vary
