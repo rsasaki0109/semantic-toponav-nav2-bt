@@ -6,7 +6,23 @@ and the package uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-Initial scaffold landing. No tagged release yet.
+### Changed
+
+- `ament_lint_auto` + `ament_lint_common` re-enabled in the build
+  (`CMakeLists.txt`) and as `test_depend` entries in `package.xml`.
+  cpplint / uncrustify / copyright / xmllint / lint_cmake now run
+  under `colcon test` alongside the gtest smoke check. C++ sources
+  rewritten to satisfy them: full Apache-2.0 boilerplate (license +
+  warranty paragraph) on each file, includes rewritten in
+  `"angle"`-less double-quote form with canonical ordering (C++ stdlib
+  → third-party headers → local headers), `<optional>` declared at the
+  top of the header that uses it, and the BT factory glue
+  (`behaviortree_cpp_v3/bt_factory.h`) lifted out of mid-file into the
+  upper include block. Closes #1.
+
+## [0.1.0] — 2026-05-17
+
+Initial scaffold landing.
 
 ### Added
 
@@ -25,13 +41,13 @@ Initial scaffold landing. No tagged release yet.
 - Apache-2.0 LICENSE, `.gitignore` for colcon / cmake / editor cruft,
   `CHANGELOG.md` placeholder.
 
-### Deferred
+### Deferred (resolved post-0.1.0)
 
 - `ament_lint_auto` / `ament_lint_common` (uncrustify / cpplint /
   copyright / xmllint / pep257 / lint_cmake) intentionally not wired
   at the v0.1.0 scaffold stage — bringing the code in line with the
-  ament canonical style needs a focused follow-up PR. Tracked as the
-  first issue against this repo.
+  ament canonical style was a focused follow-up; resolved in the next
+  Unreleased entry above.
 
 ### Depends on
 

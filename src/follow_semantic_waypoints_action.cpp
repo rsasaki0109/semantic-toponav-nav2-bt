@@ -5,14 +5,21 @@
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+// implied. See the License for the specific language governing
+// permissions and limitations under the License.
 
 #include "semantic_toponav_nav2_bt/follow_semantic_waypoints_action.hpp"
 
 #include <optional>
 #include <string>
 
-#include <tf2/LinearMath/Quaternion.h>
-#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+#include "behaviortree_cpp_v3/bt_factory.h"
+#include "tf2/LinearMath/Quaternion.h"
+#include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
 
 namespace semantic_toponav_nav2_bt
 {
@@ -90,8 +97,6 @@ FollowSemanticWaypointsAction::to_pose_stamped(
 }
 
 }  // namespace semantic_toponav_nav2_bt
-
-#include <behaviortree_cpp_v3/bt_factory.h>
 
 BT_REGISTER_NODES(factory)
 {

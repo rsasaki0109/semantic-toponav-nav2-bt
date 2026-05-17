@@ -69,9 +69,9 @@ install(FILES plugins.xml
 )
 
 if(BUILD_TESTING)
-  # ament_lint_auto / ament_lint_common are intentionally not invoked
-  # at the v0.1.0 scaffold stage — see CHANGELOG follow-up. The gtest
-  # smoke check below is the only test colcon runs for now.
+  find_package(ament_lint_auto REQUIRED)
+  ament_lint_auto_find_test_dependencies()
+
   find_package(ament_cmake_gtest REQUIRED)
   ament_add_gtest(test_plugin_loading test/test_plugin_loading.cpp)
   target_link_libraries(test_plugin_loading follow_semantic_waypoints_action)
