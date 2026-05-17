@@ -69,9 +69,17 @@ install(FILES plugins.xml
 )
 
 if(BUILD_TESTING)
-  # ament_lint_auto / ament_lint_common are intentionally not invoked
-  # at the v0.1.0 scaffold stage — see CHANGELOG follow-up. The gtest
-  # smoke check below is the only test colcon runs for now.
+  # ament_copyright is excluded because it requires a CONTRIBUTING.md
+  # at the package root and rejects the standard Apache-2.0 LICENSE
+  # text (which has no project-line copyright header). cpplint's
+  # legal/copyright check still verifies that every C++ source file
+  # carries a Copyright line.
+  set(AMENT_LINT_AUTO_EXCLUDE
+    ament_cmake_copyright
+  )
+  find_package(ament_lint_auto REQUIRED)
+  ament_lint_auto_find_test_dependencies()
+
   find_package(ament_cmake_gtest REQUIRED)
   ament_add_gtest(test_plugin_loading test/test_plugin_loading.cpp)
   target_link_libraries(test_plugin_loading follow_semantic_waypoints_action)

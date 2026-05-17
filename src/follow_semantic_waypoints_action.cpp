@@ -5,14 +5,22 @@
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+// implied. See the License for the specific language governing
+// permissions and limitations under the License.
 
 #include "semantic_toponav_nav2_bt/follow_semantic_waypoints_action.hpp"
 
+#include <memory>
 #include <optional>
 #include <string>
 
-#include <tf2/LinearMath/Quaternion.h>
-#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+#include "behaviortree_cpp_v3/bt_factory.h"
+#include "tf2/LinearMath/Quaternion.h"
+#include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
 
 namespace semantic_toponav_nav2_bt
 {
@@ -89,22 +97,21 @@ FollowSemanticWaypointsAction::to_pose_stamped(
   return ps;
 }
 
-}  // namespace semantic_toponav_nav2_bt
+namespace
+{
+std::unique_ptr<BT::TreeNode> create_follow_semantic_waypoints_node(
+  const std::string & name, const BT::NodeConfiguration & config)
+{
+  return std::make_unique<FollowSemanticWaypointsAction>(
+    name, "navigate_through_poses", config);
+}
+}  // namespace
 
-#include <behaviortree_cpp_v3/bt_factory.h>
+}  // namespace semantic_toponav_nav2_bt
 
 BT_REGISTER_NODES(factory)
 {
-  BT::NodeBuilder builder = [](
-    const std::string & name,
-    const BT::NodeConfiguration & config)
-  {
-    return std::make_unique<
-      semantic_toponav_nav2_bt::FollowSemanticWaypointsAction>(
-      name, "navigate_through_poses", config);
-  };
-
-  factory.registerBuilder<
-    semantic_toponav_nav2_bt::FollowSemanticWaypointsAction>(
-    "FollowSemanticWaypoints", builder);
+  factory.registerBuilder<semantic_toponav_nav2_bt::FollowSemanticWaypointsAction>(
+    "FollowSemanticWaypoints",
+    semantic_toponav_nav2_bt::create_follow_semantic_waypoints_node);
 }
