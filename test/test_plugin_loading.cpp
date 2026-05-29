@@ -40,7 +40,8 @@ std::unique_ptr<BT::TreeNode> build_test_node(
 // or instantiating the node would couple this test to BT.CPP v3
 // internal map layouts and to a running rclcpp context. Both end-to-
 // end interactions (port wiring, NavigateThroughPoses dispatch) are
-// exercised in the integration tests under tests/integration/ instead.
+// exercised against a live action server in
+// test/test_integration_navigate_through_poses.cpp instead.
 TEST(FollowSemanticWaypointsAction, RegistersUnderDocumentedName)
 {
   BT::BehaviorTreeFactory factory;
