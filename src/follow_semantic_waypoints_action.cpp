@@ -77,16 +77,17 @@ void FollowSemanticWaypointsAction::on_tick()
     waypoints.waypoints.size());
 }
 
-void FollowSemanticWaypointsAction::on_wait_for_result()
+void FollowSemanticWaypointsAction::on_wait_for_result(
+  std::shared_ptr<const Action::Feedback> feedback)
 {
-  // The base class spins the executor on a timeout and calls this
-  // hook whether or not a feedback has arrived; guard against the
-  // pre-first-feedback case.
-  if (feedback_ == nullptr) {
+  // The base class hands the latest feedback in directly; guard
+  // against the pre-first-feedback / spurious-wakeup case where no
+  // feedback has been published yet.
+  if (feedback == nullptr) {
     return;
   }
 
-  const int remaining = static_cast<int>(feedback_->number_of_poses_remaining);
+  const int remaining = static_cast<int>(feedback->number_of_poses_remaining);
   // current_waypoint_index = (dispatched count) - (poses remaining).
   // When Nav2 hasn't yet started counting down or has progressed
   // beyond the dispatched list (recovery / retry), clamp to a
@@ -102,8 +103,8 @@ void FollowSemanticWaypointsAction::on_wait_for_result()
 
   setOutput("current_waypoint_index", current_index);
   setOutput("number_of_poses_remaining", remaining);
-  setOutput("distance_remaining", static_cast<double>(feedback_->distance_remaining));
-  setOutput("number_of_recoveries", static_cast<int>(feedback_->number_of_recoveries));
+  setOutput("distance_remaining", static_cast<double>(feedback->distance_remaining));
+  setOutput("number_of_recoveries", static_cast<int>(feedback->number_of_recoveries));
 }
 
 BT::NodeStatus FollowSemanticWaypointsAction::on_success()

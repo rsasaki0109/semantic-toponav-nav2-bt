@@ -83,9 +83,10 @@ public:
   /// blackboard outputs (current_waypoint_index, distance_remaining,
   /// number_of_poses_remaining, number_of_recoveries) so upper BTs
   /// can branch on progress while the action is RUNNING. Called by
-  /// the parent class while waiting for a result; reads the latest
-  /// feedback via the inherited `feedback_` member.
-  void on_wait_for_result() override;
+  /// the parent class each time the action server publishes feedback,
+  /// with that feedback handed in as the argument.
+  void on_wait_for_result(
+    std::shared_ptr<const Action::Feedback> feedback) override;
 
   /// Surface the dispatched-pose count on the blackboard when the
   /// action server returns SUCCEEDED.
