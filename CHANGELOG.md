@@ -6,6 +6,30 @@ and the package uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.3.0] — 2026-05-29
+
+### Added
+
+- End-to-end integration test
+  (`test/test_integration_navigate_through_poses.cpp`) that drives the
+  real `FollowSemanticWaypoints` node against an in-process
+  `NavigateThroughPoses` action server (a test double). It exercises
+  the full `BtActionNode` lifecycle the node depends on:
+  - a `SemanticWaypointArray` with a pose-less junction is translated
+    to a goal, and the junction is filtered out (the server receives
+    exactly the pose-bearing count);
+  - the BT tree is built from XML and ticked to completion through the
+    action client / server round-trip;
+  - live `NavigateThroughPoses` feedback is forwarded to the blackboard
+    mid-flight (`current_waypoint_index` stays in `[0, n-1]`,
+    `distance_remaining` leaves its `NaN` sentinel);
+  - the action resolves to `SUCCESS` with `n_poses_dispatched` set.
+  This closes the gap the v0.1.0/v0.2.0 smoke test deferred to
+  "integration tests" — port wiring and goal dispatch are now covered
+  against a live action server rather than only at the static
+  contract surface. Driving the real Nav2 planner / controller stack
+  still needs a simulator and remains out of scope for unit CI.
+
 ## [0.2.0] — 2026-05-29
 
 ### Added

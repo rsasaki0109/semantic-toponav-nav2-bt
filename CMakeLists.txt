@@ -84,6 +84,18 @@ if(BUILD_TESTING)
   ament_add_gtest(test_plugin_loading test/test_plugin_loading.cpp)
   target_link_libraries(test_plugin_loading follow_semantic_waypoints_action)
   ament_target_dependencies(test_plugin_loading ${dependencies})
+
+  # End-to-end test: drives the node against an in-process
+  # NavigateThroughPoses action server. Spins two nodes and streams
+  # feedback, so it needs a more generous timeout than the smoke check.
+  ament_add_gtest(test_integration_navigate_through_poses
+    test/test_integration_navigate_through_poses.cpp
+    TIMEOUT 120
+  )
+  target_link_libraries(test_integration_navigate_through_poses
+    follow_semantic_waypoints_action)
+  ament_target_dependencies(test_integration_navigate_through_poses
+    ${dependencies})
 endif()
 
 ament_export_include_directories(include)

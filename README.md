@@ -10,12 +10,18 @@ plans in Python. This package consumes them in C++ from inside a Nav2
 behavior tree — no Python at runtime — and dispatches them to the
 existing Nav2 action stack (`NavigateThroughPoses`).
 
-> **Status: 0.2.0.** The `FollowSemanticWaypoints` BT node compiles,
-> registers, and now forwards live `NavigateThroughPoses` feedback to
-> the blackboard (progress ports — see below). It has not yet been
-> exercised against a running Nav2 stack, so treat this as the
-> contract surface, not a production drop-in. The integration test
-> against an apt-installed Nav2 lands in a follow-up PR.
+> **Status: 0.3.0.** The `FollowSemanticWaypoints` BT node compiles,
+> registers, forwards live `NavigateThroughPoses` feedback to the
+> blackboard (progress ports — see below), and is now exercised
+> end-to-end against an in-process `NavigateThroughPoses` action
+> server: goal translation (pose-less waypoints filtered out), the
+> full `BtActionNode` round-trip, mid-flight feedback forwarding, and
+> `SUCCESS` resolution all run under `colcon test`
+> (`test/test_integration_navigate_through_poses.cpp`). It has not yet
+> been driven against the real Nav2 planner / controller stack — that
+> needs a simulator and is out of scope for unit CI — so treat this as
+> a contract-complete bridge, validated against the action interface
+> but not yet a field-proven production drop-in.
 
 ## What's in the package
 
@@ -26,6 +32,7 @@ existing Nav2 action stack (`NavigateThroughPoses`).
 | `plugins.xml` | Nav2 BT plugin manifest the BT factory loads |
 | `behavior_trees/follow_semantic_waypoints.xml` | Sample BT tree showing the node in use |
 | `test/test_plugin_loading.cpp` | gtest smoke check that the factory registers the node + exposes ports |
+| `test/test_integration_navigate_through_poses.cpp` | end-to-end gtest driving the node against an in-process `NavigateThroughPoses` action server |
 | `.github/workflows/colcon-ci.yml` | ROS 2 Humble matrix CI (build + test) |
 
 ## How the bridge works
