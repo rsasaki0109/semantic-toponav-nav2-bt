@@ -18,10 +18,24 @@
         </CheckCondition>
       </RetryUntilSuccessful>
 
+      <!-- The progress output ports (current_waypoint_index,
+           number_of_poses_remaining, distance_remaining,
+           number_of_recoveries) are refreshed on every
+           NavigateThroughPoses feedback tick. They are seeded with
+           sentinel values (-1 / NaN) on activation and only become
+           meaningful once the first feedback arrives. To branch on
+           them while navigation is RUNNING, place this node under a
+           ReactiveSequence / ReactiveFallback and read the keys from a
+           sibling condition node — under a plain Sequence the ports
+           are only observable after the action returns. -->
       <FollowSemanticWaypoints
         waypoints="{waypoints}"
         server_name="navigate_through_poses"
-        n_poses_dispatched="{n_poses_dispatched}"/>
+        n_poses_dispatched="{n_poses_dispatched}"
+        current_waypoint_index="{current_waypoint_index}"
+        number_of_poses_remaining="{number_of_poses_remaining}"
+        distance_remaining="{distance_remaining}"
+        number_of_recoveries="{number_of_recoveries}"/>
 
     </Sequence>
   </BehaviorTree>

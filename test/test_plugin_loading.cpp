@@ -56,6 +56,29 @@ TEST(FollowSemanticWaypointsAction, RegistersUnderDocumentedName)
     << "FollowSemanticWaypoints was not registered with the factory";
 }
 
+// providedPorts() is a static contract surface — we can assert the
+// documented ports exist without a running rclcpp context or a live
+// node instance, so this stays a pure unit check. It guards the v0.2
+// feedback-port additions against accidental removal / rename.
+TEST(FollowSemanticWaypointsAction, ExposesDocumentedPorts)
+{
+  const auto ports = stb::FollowSemanticWaypointsAction::providedPorts();
+
+  EXPECT_EQ(ports.count("waypoints"), 1U) << "missing input port 'waypoints'";
+  EXPECT_EQ(ports.count("n_poses_dispatched"), 1U)
+    << "missing output port 'n_poses_dispatched'";
+
+  // v0.2 NavigateThroughPoses feedback ports.
+  EXPECT_EQ(ports.count("current_waypoint_index"), 1U)
+    << "missing feedback port 'current_waypoint_index'";
+  EXPECT_EQ(ports.count("number_of_poses_remaining"), 1U)
+    << "missing feedback port 'number_of_poses_remaining'";
+  EXPECT_EQ(ports.count("distance_remaining"), 1U)
+    << "missing feedback port 'distance_remaining'";
+  EXPECT_EQ(ports.count("number_of_recoveries"), 1U)
+    << "missing feedback port 'number_of_recoveries'";
+}
+
 int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);

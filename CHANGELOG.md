@@ -6,6 +6,33 @@ and the package uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.2.0] — 2026-05-29
+
+### Added
+
+- `FollowSemanticWaypoints` now forwards live `NavigateThroughPoses`
+  feedback to the blackboard so upper behavior trees can branch on
+  navigation progress while the action is RUNNING. Four new output
+  ports, refreshed on every feedback tick via the `on_wait_for_result()`
+  hook:
+  - `current_waypoint_index` (int) — zero-based index of the dispatched
+    pose Nav2 is progressing toward, derived as
+    `n_poses_dispatched - number_of_poses_remaining` and clamped into
+    `[0, n_poses_dispatched - 1]`.
+  - `number_of_poses_remaining` (int) — Nav2 feedback, forwarded verbatim.
+  - `distance_remaining` (double, meters) — Nav2 feedback, forwarded
+    verbatim.
+  - `number_of_recoveries` (int) — Nav2 feedback, forwarded verbatim.
+  All four are seeded with sentinel values (`-1` / `NaN`) on activation
+  so a BT that peeks before the first feedback sees a defined
+  "no progress yet" state rather than stale contents from a prior tick.
+  To observe them mid-flight, place the node under a `ReactiveSequence`
+  / `ReactiveFallback`; the sample tree in
+  `behavior_trees/follow_semantic_waypoints.xml` shows the port wiring.
+- gtest `ExposesDocumentedPorts` case asserting the static
+  `providedPorts()` contract surface includes all input/output ports,
+  guarding the new feedback ports against accidental rename / removal.
+
 ### Changed
 
 - `ament_lint_auto` + `ament_lint_common` re-enabled in the build
