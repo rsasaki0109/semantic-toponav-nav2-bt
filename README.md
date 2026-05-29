@@ -10,11 +10,12 @@ plans in Python. This package consumes them in C++ from inside a Nav2
 behavior tree — no Python at runtime — and dispatches them to the
 existing Nav2 action stack (`NavigateThroughPoses`).
 
-> **Status: 0.1.0 scaffold.** The `FollowSemanticWaypoints` BT node
-> compiles and registers but has not yet been exercised against a
-> running Nav2 stack. Treat this as the contract surface, not a
-> production drop-in. The integration test against an apt-installed
-> Nav2 lands in a follow-up PR.
+> **Status: 0.2.0.** The `FollowSemanticWaypoints` BT node compiles,
+> registers, and now forwards live `NavigateThroughPoses` feedback to
+> the blackboard (progress ports — see below). It has not yet been
+> exercised against a running Nav2 stack, so treat this as the
+> contract surface, not a production drop-in. The integration test
+> against an apt-installed Nav2 lands in a follow-up PR.
 
 ## What's in the package
 
@@ -57,13 +58,22 @@ The BT node:
    it via the action-client lifecycle the parent `BtActionNode`
    provides (cancel-on-halt, feedback ports, server-side timeouts all
    come for free).
-5. On `SUCCEEDED`, writes the dispatched-pose count to the blackboard
+5. While the action is RUNNING, forwards each `NavigateThroughPoses`
+   feedback to four blackboard outputs —
+   `{current_waypoint_index}` (derived),
+   `{number_of_poses_remaining}`, `{distance_remaining}` (meters), and
+   `{number_of_recoveries}` — so an upper BT under a
+   `ReactiveSequence` / `ReactiveFallback` can branch on progress
+   mid-flight. They are seeded with sentinel values (`-1` / `NaN`) on
+   activation; under a plain `Sequence` they are only observable after
+   the action returns.
+6. On `SUCCEEDED`, writes the dispatched-pose count to the blackboard
    output `{n_poses_dispatched}`.
 
 The instruction / action / label fields from each `SemanticWaypoint`
-are **not** consumed in this 0.1.0 scaffold — they're available on the
-blackboard for downstream BT nodes (text-to-speech, UI overlays) to
-pick up if the integrator wires them through.
+are **not** consumed here — they're available on the blackboard for
+downstream BT nodes (text-to-speech, UI overlays) to pick up if the
+integrator wires them through.
 
 ## Build
 

@@ -48,7 +48,20 @@ namespace semantic_toponav_nav2_bt
 /// Blackboard outputs:
 ///   - "n_poses_dispatched" (int): How many poses the BT actually sent
 ///     to NavigateThroughPoses (waypoints with has_pose=false are
-///     skipped).
+///     skipped). Set on SUCCEEDED.
+///   - "current_waypoint_index" (int): Zero-based index of the
+///     dispatched pose Nav2 is currently progressing toward, derived
+///     from feedback as
+///     n_poses_dispatched - number_of_poses_remaining. -1 before the
+///     first feedback arrives or when the BT cannot infer it. Updated
+///     on every feedback tick — upper BTs can branch on progress
+///     under a ReactiveSequence / ReactiveFallback.
+///   - "number_of_poses_remaining" (int): Nav2 NavigateThroughPoses
+///     feedback, forwarded verbatim. -1 before the first feedback.
+///   - "distance_remaining" (double): Nav2 feedback, meters. NaN
+///     before the first feedback.
+///   - "number_of_recoveries" (int): Nav2 feedback. -1 before the
+///     first feedback.
 class FollowSemanticWaypointsAction
   : public nav2_behavior_tree::BtActionNode<nav2_msgs::action::NavigateThroughPoses>
 {
@@ -66,6 +79,15 @@ public:
   /// activation, before the action client sends the goal.
   void on_tick() override;
 
+  /// Forward the latest NavigateThroughPoses feedback to the
+  /// blackboard outputs (current_waypoint_index, distance_remaining,
+  /// number_of_poses_remaining, number_of_recoveries) so upper BTs
+  /// can branch on progress while the action is RUNNING. Called by
+  /// the parent class each time the action server publishes feedback,
+  /// with that feedback handed in as the argument.
+  void on_wait_for_result(
+    std::shared_ptr<const Action::Feedback> feedback) override;
+
   /// Surface the dispatched-pose count on the blackboard when the
   /// action server returns SUCCEEDED.
   BT::NodeStatus on_success() override;
@@ -80,6 +102,23 @@ public:
         BT::OutputPort<int>(
           "n_poses_dispatched",
           "Count of poses actually dispatched to NavigateThroughPoses."),
+        BT::OutputPort<int>(
+          "current_waypoint_index",
+          "Zero-based index of the dispatched pose Nav2 is currently "
+          "progressing toward (derived from feedback). -1 before the "
+          "first feedback."),
+        BT::OutputPort<int>(
+          "number_of_poses_remaining",
+          "NavigateThroughPoses feedback, forwarded verbatim. -1 "
+          "before the first feedback."),
+        BT::OutputPort<double>(
+          "distance_remaining",
+          "Distance to the current goal in meters, from feedback. "
+          "NaN before the first feedback."),
+        BT::OutputPort<int>(
+          "number_of_recoveries",
+          "Nav2 feedback, forwarded verbatim. -1 before the first "
+          "feedback."),
       });
   }
 

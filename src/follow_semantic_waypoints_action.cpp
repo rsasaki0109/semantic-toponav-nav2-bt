@@ -14,6 +14,8 @@
 
 #include "semantic_toponav_nav2_bt/follow_semantic_waypoints_action.hpp"
 
+#include <cmath>
+#include <limits>
 #include <memory>
 #include <optional>
 #include <string>
@@ -58,12 +60,51 @@ void FollowSemanticWaypointsAction::on_tick()
   }
   n_poses_dispatched_ = static_cast<int>(goal_.poses.size());
 
+  // Seed the progress outputs with sentinel values so upper BTs that
+  // peek at them before the first feedback arrives see a defined
+  // "no progress yet" state instead of stale blackboard contents
+  // from a prior tick.
+  setOutput("current_waypoint_index", -1);
+  setOutput("number_of_poses_remaining", -1);
+  setOutput("distance_remaining", std::numeric_limits<double>::quiet_NaN());
+  setOutput("number_of_recoveries", -1);
+
   RCLCPP_INFO(
     node_->get_logger(),
     "%s: dispatching %d of %zu semantic waypoints to NavigateThroughPoses",
     name().c_str(),
     n_poses_dispatched_,
     waypoints.waypoints.size());
+}
+
+void FollowSemanticWaypointsAction::on_wait_for_result(
+  std::shared_ptr<const Action::Feedback> feedback)
+{
+  // The base class hands the latest feedback in directly; guard
+  // against the pre-first-feedback / spurious-wakeup case where no
+  // feedback has been published yet.
+  if (feedback == nullptr) {
+    return;
+  }
+
+  const int remaining = static_cast<int>(feedback->number_of_poses_remaining);
+  // current_waypoint_index = (dispatched count) - (poses remaining).
+  // When Nav2 hasn't yet started counting down or has progressed
+  // beyond the dispatched list (recovery / retry), clamp to a
+  // legal in-range index so downstream BTs that read this as an
+  // array index don't fault.
+  int current_index = n_poses_dispatched_ - remaining;
+  if (current_index < 0) {
+    current_index = 0;
+  }
+  if (n_poses_dispatched_ > 0 && current_index >= n_poses_dispatched_) {
+    current_index = n_poses_dispatched_ - 1;
+  }
+
+  setOutput("current_waypoint_index", current_index);
+  setOutput("number_of_poses_remaining", remaining);
+  setOutput("distance_remaining", static_cast<double>(feedback->distance_remaining));
+  setOutput("number_of_recoveries", static_cast<int>(feedback->number_of_recoveries));
 }
 
 BT::NodeStatus FollowSemanticWaypointsAction::on_success()
